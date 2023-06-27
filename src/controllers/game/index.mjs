@@ -2,17 +2,18 @@ import { Contest, Transaction, User } from "../../models/index.mjs";
 import clientResponse from "../../utils/response.mjs";
 import { gameSchema } from "../../validator/game.mjs";
 import { CustomErrorHandler } from "../../services/index.mjs";
-import { handleWin, updateAccountBalance } from "./halper.mjs";
-
+import { updateAccountBalance } from "./halper.mjs";
+// import redisClient from '../../cache/index.mjs'
 
 const gameController = {
   //current game all inforamation
   currentGame: async (rea, res, next) => {
     try {
       console.log(CURRENT_GAME, PRE_GAME);
-      const currentGame = await Contest.findOne({ contestId: CURRENT_GAME }).select(["-players","-winners","-__v"]);
+      const currentGame = await Contest.findOne({ contestId: CURRENT_GAME }).select(["-players","-winners","-__v","-_id","-createdAt","-updatedAt"]);
       // await currentGame.save()
       console.log(currentGame);
+      // await redisClient.set('currentGame', JSON.stringify(currentGame));
       return clientResponse(res, 200, true, currentGame);
     } catch (error) {
       return next(error);
@@ -21,7 +22,8 @@ const gameController = {
   //pre games for records tables
   lastTenRecords : async (req, res, next)=>{
     try {
-    const docs = await Contest.find().sort({ createdAt: -1 }).limit(10).select(["-id","-gameEndTime","-status","-players","-winners","-createdAt","-updatedAt","-adminErnning","-totalAmount","-__v"]);
+    const docs = await Contest.find().sort({ createdAt: -1 }).limit(11).select(["-id","-gameEndTime","-status","-players","-winners","-createdAt","-updatedAt","-adminErnning","-_id","-totalAmount","-__v"]);
+    docs.shift();
     return clientResponse(res, 200, true, docs);
     } catch (error) {
       return next(error)
@@ -86,7 +88,7 @@ const gameController = {
       }
       return next(error);
     }
-    return clientResponse(res, 200, true, contest);
+    return clientResponse(res, 200, true, {message:"You are joined this game successfuly."});
   },
 
   //

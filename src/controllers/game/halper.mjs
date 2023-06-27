@@ -25,13 +25,13 @@ export const handleWin = async (contestId) => {
       { new: true }
     );
     // Calculate the total bet amount
-    if (priGame.players.lenght === 0) {
-      priGame.totalAmount = 0;
-    } else {
+    if (priGame?.players.lenght !== 0) {
       priGame.totalAmount = priGame?.players.reduce(
         (total, player) => total + player.betAmount,
         0
-      );
+        );
+      } else {
+      priGame.totalAmount = 0;
     }
 
     // Find out the most selected number
@@ -152,13 +152,15 @@ export const startNewGame = async () => {
     } else {
       PRE_GAME = contestId - 1;
     }
-
-    handleWin(PRE_GAME);
-
+    
+    
     const gameEndTime = new Date(Date.now() + 3 * 60 * 1000);
     const gameState = new Contest({ contestId, gameEndTime });
     await gameState.save();
-
+    if(PRE_GAME>0){
+      console.log(PRE_GAME)
+      handleWin(PRE_GAME);
+    }
     setTimeout(startNewGame, 3 * 60 * 1000);
   } catch (error) {
     console.log(error);

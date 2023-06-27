@@ -9,7 +9,7 @@ import cluster from "cluster";
 import { startNewGame } from "./controllers/game/halper.mjs";
 //galobal variable for currrent and privies state 
 global.CURRENT_GAME=null;
-global.PRE_GAME = null;
+global.PRE_GAME = 0;
 global.WINNING_MODE= 1;
 const app = express();
 app.use(cors())
@@ -19,7 +19,6 @@ dbConnecation()
 // Start the first game immediately =
 // this new game runs only once in cluster mode write for this s
 startNewGame();
-
 app.use('/uploads',express.static("uploads"))
 app.use(urlencoded({extended:true}))
 app.use(json({limit:"10mb"}))

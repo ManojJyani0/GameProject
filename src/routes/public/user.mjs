@@ -1,6 +1,6 @@
 import { gameController, transactionController, userController } from "../../controllers/index.mjs";
 import express from "express";
-import {userAuth, userExistsCheck, utrExistsCheck} from "../../middleware/index.mjs";
+import {allReadyJoind, userAuth, userExistsCheck, utrExistsCheck} from "../../middleware/index.mjs";
 const router = express.Router();
 
 //user related routes
@@ -28,7 +28,7 @@ router.get("/refillDetails",userAuth,transactionController.refillDetails)
 
 //game router
 router.get("/currentGame",userAuth,gameController.currentGame); //
-router.post("/joinGame",userAuth,gameController.joinGame); //
+router.post("/joinGame",[userAuth,allReadyJoind],gameController.joinGame); //
 router.get("/lastRecords",userAuth,gameController.lastTenRecords); //
 
 

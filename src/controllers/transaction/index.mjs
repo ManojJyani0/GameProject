@@ -11,9 +11,8 @@ const transactionController = {
     //for featching user reletaed transactions
     getTransactions: async (req, res, next) => {
         try {
-            const userId = req.params.id;
-            const transactionList = await Transaction.find(userId).select(["-_id","-userId","-__v","-updatedAt"]).sort({createdAt:1}); 
-            const balance = await getUserBalance(transactionList)
+            const transactionList = await Transaction.find({userId:req.user._id}).select(["-_id","-userId","-__v","-updatedAt"]).sort({createdAt:1}); 
+            // const balance = await getUserBalance(transactionList)
             return clientResponse(res, 200, true,transactionList)        
         } catch (error) {
             return next(error)
@@ -21,17 +20,18 @@ const transactionController = {
     },
     getBalance:async (req, res, next)=>{
         try {
-            const userId = req.params.id;
-            const transactionList = await Transaction.find(userId);
+            const transactionList = await Transaction.find({userId:req.user._id});
             const balance = await getUserBalance(transactionList)
-
+            const winningCoins = transactionList.reduce((acc,doc)=>(doc.transactionType==="PriceMoney")?acc+=doc.amount:acc,0)
             const user = await User.findById(req.user._id);
             if(user){
                 user.amount = balance;
+                user.winningCoins = winningCoins;
                 // console.log(user)
                 await user.save();
             }
-            return clientResponse(res, 200, true,{balance} )
+
+            return clientResponse(res, 200, true,{balance,winningCoins} )
             } catch (error) {
             return next(error)
         }

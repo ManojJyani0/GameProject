@@ -21,7 +21,6 @@ export const genrateOTP = () =>
 export const getUserBalance = async (transactionList) => {
   
 const balance = transactionList.reduce((total, transaction) => {
-    console.log(total)
     if (
       transaction.transactionType === "Deposit" &&
       transaction.status === "Success"

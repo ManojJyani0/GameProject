@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";   
 import { Schema } from "mongoose";
 
@@ -28,6 +27,10 @@ const userSchema = new Schema({
           type: Number,
           default: 0.0,
         },
+        winningCoins:{
+          type:Number,
+          default:0
+        }
         
       },
       {
