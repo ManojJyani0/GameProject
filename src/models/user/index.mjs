@@ -30,8 +30,10 @@ const userSchema = new Schema({
         winningCoins:{
           type:Number,
           default:0
-        }
-        
+        },
+        promo_code:{
+          type:String,
+        }        
       },
       {
         timestamps: true,

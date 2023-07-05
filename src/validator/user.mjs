@@ -7,7 +7,8 @@ export const userSchema = Joi.object({
   }),
   password: Joi.string().min(8).max(20).required(),
   confirmPassword: Joi.string().equal(Joi.ref('password')).required(),
-  agreement:Joi.boolean().valid(true)
+  agreement:Joi.boolean().valid(true),
+  promo_code:Joi.string(),
 })
 
 export const loginSchema = Joi.object({

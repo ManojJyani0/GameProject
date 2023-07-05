@@ -3,30 +3,58 @@ import clientResponse from "../../utils/response.mjs";
 import { gameSchema } from "../../validator/game.mjs";
 import { CustomErrorHandler } from "../../services/index.mjs";
 import { updateAccountBalance } from "./halper.mjs";
-// import redisClient from '../../cache/index.mjs'
-
+import { client } from "../../cache/middlewares.mjs";
 const gameController = {
   //current game all inforamation
   currentGame: async (rea, res, next) => {
     try {
-      console.log(CURRENT_GAME, PRE_GAME);
-      const currentGame = await Contest.findOne({ contestId: CURRENT_GAME }).select(["-players","-winners","-__v","-_id","-createdAt","-updatedAt"]);
-      // await currentGame.save()
-      console.log(currentGame);
-      // await redisClient.set('currentGame', JSON.stringify(currentGame));
+      const currentGame = await Contest.findOne({
+        contestId: CURRENT_GAME,
+      }).select([
+        "-players",
+        "-winners",
+        "-__v",
+        "-_id",
+        "-createdAt",
+        "-updatedAt",
+      ]);
+      // await currentGame.save()      
+      console.log('response from Database')
+      await client.set('currentGame', JSON.stringify(currentGame),{
+        EX: Math.floor((currentGame.gameEndTime-Date.now())/1000),
+      });
       return clientResponse(res, 200, true, currentGame);
     } catch (error) {
       return next(error);
     }
   },
   //pre games for records tables
-  lastTenRecords : async (req, res, next)=>{
+  lastTenRecords: async (req, res, next) => {
     try {
-    const docs = await Contest.find().sort({ createdAt: -1 }).limit(11).select(["-id","-gameEndTime","-status","-players","-winners","-createdAt","-updatedAt","-adminErnning","-_id","-totalAmount","-__v"]);
-    docs.shift();
-    return clientResponse(res, 200, true, docs);
+      console.log("response form database")
+      const docs = await Contest.find({status:"Closed"})
+        .sort({ createdAt: -1 })
+        .limit(11)
+        .select([
+          "-id",
+          "-gameEndTime",
+          "-status",
+          "-players",
+          "-winners",
+          "-createdAt",
+          "-updatedAt",
+          "-adminErnning",
+          "-_id",
+          "-totalAmount",
+          "-__v",
+        ]);
+      await client.set('last10Records', JSON.stringify(docs),{
+        EX: 150,
+      });
+      console.log(docs)
+      return clientResponse(res, 200, true, docs);
     } catch (error) {
-      return next(error)
+      return next(error);
     }
   },
 
@@ -43,8 +71,16 @@ const gameController = {
       return next(CustomErrorHandler.notEnoughBalance());
     }
     const contest = await Contest.findOne({ contestId });
-    let alreadyExist = contest?.players.findIndex((player)=>player.userId===req.user._id);
-    console.log("index of user",alreadyExist);
+    console.log("user id ", req.user._id);
+    let alreadyExist = contest?.players.findIndex(
+      (player) => player.userId == req.user._id
+    );
+    if (alreadyExist >= 0) {
+      return next(
+        CustomErrorHandler.alreadyExist("you are alredy Joined This game")
+      );
+    }
+    console.log("index of user", alreadyExist);
     if (!contest) {
       return next(new CustomErrorHandler(400, "Invalid contest id"));
     }
@@ -55,8 +91,12 @@ const gameController = {
         )
       );
     }
-    if(contest.status==="Closed"){
-      return next(CustomErrorHandler.gameEnd("This game is closed due to time try in next game")) ;
+    if (contest.status === "Closed") {
+      return next(
+        CustomErrorHandler.gameEnd(
+          "This game is closed due to time try in next game"
+        )
+      );
     }
     if (contest.contestId === PRE_GAME) {
       return next(
@@ -88,7 +128,9 @@ const gameController = {
       }
       return next(error);
     }
-    return clientResponse(res, 200, true, {message:"You are joined this game successfuly."});
+    return clientResponse(res, 200, true, {
+      message: "You are joined this game successfuly.",
+    });
   },
 
   //

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo 'Who are you?'
+
+service mongod start
+service redis-server start
+
+npm run dev
+

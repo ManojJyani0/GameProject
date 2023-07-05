@@ -22,10 +22,11 @@ const userController = {
       return next(error);
     }
     const hash = await bcrypt.hash(value.password, 10);
-    const { name, mobile } = value;
+    const { name, mobile, promo_code } = value;
     const user = new User({
       name,
       mobile,
+      promo_code,
       password: hash,
     });
     if (user) {

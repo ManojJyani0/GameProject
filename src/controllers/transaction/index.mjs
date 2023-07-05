@@ -11,7 +11,7 @@ const transactionController = {
     //for featching user reletaed transactions
     getTransactions: async (req, res, next) => {
         try {
-            const transactionList = await Transaction.find({userId:req.user._id}).select(["-_id","-userId","-__v","-updatedAt"]).sort({createdAt:1}); 
+            const transactionList = await Transaction.find({userId:req.user._id}).select(["-_id","-userId","-__v","-updatedAt"]).sort({createdAt:-1}).limit(10);
             // const balance = await getUserBalance(transactionList)
             return clientResponse(res, 200, true,transactionList)        
         } catch (error) {
@@ -96,10 +96,9 @@ const transactionController = {
             return next(error)
         }
         const {amount, UTR,} = value;
-        let transaction = null;
         try {
-            transaction = await Transaction.create({amount,UTR,userId:req.user._id, transactionType:"Deposit" });
-            return clientResponse(res, 200, true, transaction);
+            await Transaction.create({amount,UTR,userId:req.user._id, transactionType:"Deposit" });
+            return clientResponse(res, 200, true, {message:"Your Transaction is Successfully Genrated"});
         } catch (error) {
             return next (error)
         }

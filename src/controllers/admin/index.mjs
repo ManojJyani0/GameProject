@@ -3,7 +3,6 @@ import { Account, Contest, Transaction, User } from "../../models/index.mjs";
 import { CustomErrorHandler, JwtService } from "../../services/index.mjs";
 import bcrypt from "bcryptjs";
 import { loginSchema } from "../../validator/index.mjs";
-import { handleMultipartData } from "../../middleware/index.mjs";
 
 const adminController = {
   async adminLogin(req, res, next) {
@@ -97,39 +96,8 @@ const adminController = {
     }
   },
   async updateQR(req, res, next) {
-    handleMultipartData(req, res, async (err) => {
-      try {
-        if (err) {
-          return next(CustomErrorHandler.serverError(err.message));
-        }
-
-        const filePath = req.file.path;
-
-        //create a crop
-        let document = null;
-        try {
-          const { upiID, AccountHolder } = req.body;
-          document = await Account.create({
-            upiID,
-            AccountHolder,
-            imageUrl: filePath,
-          });
-        } catch (error) {
-          return next(error);
-        }
-        return clientResponse(res, 201, true, document);
-      } catch (error) {
-        //this error is basical for file uploaed or not
-        if (
-          error.message ===
-          "Cannot read properties of undefined (reading 'path')"
-        ) {
-          return next(CustomErrorHandler.serverError("image is required"));
-        }
-        return next(error);
-      }
-    });
-  },
+    //todo this route is now updated for some resion so update is as soon as posible
+  }
 };
 
 export default adminController;
