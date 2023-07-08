@@ -3,7 +3,7 @@ import { getUserBalance } from "../../utils/index.mjs";
 
 export const updateAccountBalance = async (userDocId) => {
   // Update the user's account balance in the database
-  const user = await User.findById(userDocId);
+  const user = await User.findById(userDocId).select("-AccountNumbers");
   const transactionList = await Transaction.find({ userId: userDocId });
   user.amount = await getUserBalance(transactionList);
   await user.save();
@@ -21,10 +21,13 @@ export const handleWin = async (contestId) => {
   try {
     const priGame = await Contest.findOneAndUpdate(
       { contestId },
-      { $set: { status: "Closed", winningPrice: getRandomInt(13200, 14800) } },
+      { $set: { status: "Closed", winningPrice: getRandomInt(10200, 18800) } },
       { new: true }
     );
     // Calculate the total bet amount
+    if(priGame?.players.length<10){
+      WINNING_MODE = "SECOND_MOST"
+    }
     if (priGame?.players.lenght !== 0) {
       priGame.totalAmount = priGame?.players.reduce(
         (total, player) => total + player.betAmount,
@@ -39,41 +42,47 @@ export const handleWin = async (contestId) => {
       acc[val.number] = (acc[val.number] || 0) + 1;
       return acc;
     }, {});
-    switch (WINNING_MODE) {
-      case "MAX_WINNER": // Find the winning number with the highest count
-        priGame.winningNumber = parseInt(
-          Object.keys(findMostNumberSelected).reduce((a, b) =>
-            findMostNumberSelected[a] < findMostNumberSelected[b] ? b : a
-          )
-        );
-        break;
-      case "LOWEST_WINNER":
-        // Find the winning number with the lowest count
-        priGame.winningNumber = parseInt(
-          Object.keys(findMostNumberSelected).reduce((a, b) =>
-            findMostNumberSelected[a] > findMostNumberSelected[b] ? b : a
-          )
-        );
-        break;
-      case "SECOND_MOST":
-        // Find the second most selected winning number
-        priGame.winningNumber = parseInt(
-          Object.keys(findMostNumberSelected).sort(
-            (a, b) => findMostNumberSelected[b] - findMostNumberSelected[a]
-          )[1]
-        );
-        break;
-      case "SECOND_LAST":
-        // Find the second last selected winning number
-        priGame.winningNumber = parseInt(
-          Object.keys(findMostNumberSelected).sort(
-            (a, b) => findMostNumberSelected[a] - findMostNumberSelected[b]
-          )[1]
-        );
-        break;
-      default:
-        priGame.winningNumber = getRandomInt(0, 9);
-        break;
+
+    if(priGame.players.length!==0){
+
+      switch (WINNING_MODE) {
+        case "MAX_WINNER": // Find the winning number with the highest count
+          priGame.winningNumber = parseInt(
+            Object.keys(findMostNumberSelected).reduce((a, b) =>
+              findMostNumberSelected[a] < findMostNumberSelected[b] ? b : a
+            )
+          );
+          break;
+        case "LOWEST_WINNER":
+          // Find the winning number with the lowest count
+          priGame.winningNumber = parseInt(
+            Object.keys(findMostNumberSelected).reduce((a, b) =>
+              findMostNumberSelected[a] > findMostNumberSelected[b] ? b : a
+            )
+          );
+          break;
+        case "SECOND_MOST":
+          // Find the second most selected winning number
+          priGame.winningNumber = parseInt(
+            Object.keys(findMostNumberSelected).sort(
+              (a, b) => findMostNumberSelected[b] - findMostNumberSelected[a]
+            )[1]
+          );
+          break;
+        case "SECOND_LAST":
+          // Find the second last selected winning number
+          priGame.winningNumber = parseInt(
+            Object.keys(findMostNumberSelected).sort(
+              (a, b) => findMostNumberSelected[a] - findMostNumberSelected[b]
+            )[1]
+          );
+          break;
+        default:
+          priGame.winningNumber = getRandomInt(0, 9);
+          break;
+      }
+    }else{
+      priGame.winningNumber = getRandomInt(0, 9);
     }
 
     // Find out the winning players
@@ -111,7 +120,7 @@ export const handleWin = async (contestId) => {
     });
 
     const leftoverAmount = priGame.totalAmount - prizePool;
-    priGame.adminErnning = leftoverAmount;
+    priGame.adminErnning = winningPlayers.length!==0?leftoverAmount:priGame.totalAmount;
     priGame.winners = winningPlayers;
 
     const fullAdminAmount = transactionList.reduce((acc, transaction) => {
@@ -158,7 +167,6 @@ export const startNewGame = async () => {
     const gameState = new Contest({ contestId, gameEndTime });
     await gameState.save();
     if(PRE_GAME>0){
-      console.log(PRE_GAME)
       handleWin(PRE_GAME);
     }
     setTimeout(startNewGame, 3 * 60 * 1000);

@@ -9,6 +9,7 @@ const router = express.Router();
 router.post("/ragistration",userExistsCheck,userController.regestration);
 router.post("/login",userController.login);
 router.get("/me",userAuth,userController.me)
+router.get("/bankAccounts",userAuth,userController.getBankAccounts)
 
 //mobile number verification
 router.post("/veryfyOTP",userAuth,userController.verifyOTP);
@@ -21,6 +22,7 @@ router.post("/deposit",[userAuth,utrExistsCheck ],transactionController.handleDe
 router.get("/transaction:userId",userAuth,transactionController.getTransactions);
 router.get("/getBalance",userAuth,transactionController.getBalance)
 router.get("/winningPrices",userAuth,transactionController.winningPrices)
+
 
 // add or delete bankAccouts 
 // router.post("/addBankAccount",userAuth,transactionController.addBankAccount)

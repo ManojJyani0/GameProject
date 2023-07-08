@@ -14,10 +14,10 @@ router.get("/transaction",[userAuth,adminAuth],adminController.pendingTransactio
 //update the spacific trasaction
 router.patch("/transaction/:id",[userAuth,adminAuth],adminController.updateTransaction);
 
-// update QR-CODE details for changing accounts 
-router.post("/updateQR",[userAuth,adminAuth],adminController.updateQR);
-
 router.get("/pendingTransaction",[userAuth,adminAuth],adminController.pendingTransaction);
 router.get("/pendingRequest",[userAuth,adminAuth],adminController.pendingRequest);
+
+router.post("/setWinningMode",[userAuth,adminAuth],adminController.winningMode)
+
 
 export default router;

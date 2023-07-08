@@ -13,6 +13,7 @@ export const withdrawalSchema = Joi.object({
     amount: Joi.number().min(100).required(),
     IFSC_code:Joi.string().required(),
     agreement:Joi.boolean(),
+    addToList:Joi.boolean()
 })
 
 export const utrValidation = Joi.object({

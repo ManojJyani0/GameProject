@@ -23,7 +23,7 @@ const transactionController = {
             const transactionList = await Transaction.find({userId:req.user._id});
             const balance = await getUserBalance(transactionList)
             const winningCoins = transactionList.reduce((acc,doc)=>(doc.transactionType==="PriceMoney")?acc+=doc.amount:acc,0)
-            const user = await User.findById(req.user._id);
+            const user = await User.findById(req.user._id).select("-AccountNumbers");
             if(user){
                 user.amount = balance;
                 user.winningCoins = winningCoins;
@@ -55,6 +55,7 @@ const transactionController = {
         try {
         // Get User's Balance from Database
         const {error,value} = withdrawalSchema.validate(req.body)
+        console.log(value)
         if(error){
             return next(error)
         }
@@ -62,7 +63,7 @@ const transactionController = {
         const balance = await getUserBalance(transactionList)
 
         // Check if User Has Enough Balance
-        console.log(balance)
+        console.log(balance,value)
         if (balance >= value.amount) {
             // Create Transaction Object
             const transaction = new Transaction({
@@ -75,8 +76,16 @@ const transactionController = {
 
             // upadating balance in users account via transactions
             const user = await User.findById(req.user._id);
+            console.log(user)
             user.amount = balance;
             await user.save();
+
+            if(value.addToList){
+                const {accountHolderName, accountNumber, bankName,IFSC_code} = value;
+                if(user.AccountNumbers.findIndex((account)=>account.accountNumber===accountNumber)<0)
+                    user.AccountNumbers.push({accountHolderName, accountNumber, bankName,IFSC_code});
+                await user.save();
+            }
             // Return Success Notification
             return clientResponse(res,200,true,{ message: "Withdrawal request make successfuly!" });
         } else {
@@ -84,6 +93,7 @@ const transactionController = {
             return next(CustomErrorHandler.notEnoughBalance("Insufficient balance!"))
         }
     } catch (error) {
+        console.log(error)
         return next(error)
     }
     },

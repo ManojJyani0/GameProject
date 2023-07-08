@@ -8,7 +8,7 @@ const userExistsCheck = async (req, res, next) => {
     return next(error);
   }
   try {
-    const user = await User.findOne({ mobile: value.mobile });
+    const user = await User.findOne({ mobile: value.mobile }).select("-AccountNumbers");
     console.log(user)
     if (user) {
       return next(CustomErrorHandler.alreadyExist("User is alredy exist"));

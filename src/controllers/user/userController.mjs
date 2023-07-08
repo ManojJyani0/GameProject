@@ -7,7 +7,7 @@ import {
 import bcrypt from "bcryptjs";
 // import twilio from "twilio";
 
-import { User, OTP } from "../../models/index.mjs";
+import { User, OTP, Account } from "../../models/index.mjs";
 import { genrateOTP } from "../../utils/message.mjs";
 
 import { CustomErrorHandler, JwtService } from "../../services/index.mjs";
@@ -55,7 +55,7 @@ const userController = {
     let user = null;
     // finding user in databse
     try {
-      user = await User.findOne({ mobile: value.mobile });
+      user = await User.findOne({ mobile: value.mobile }).select("-AccountNumbers");
     } catch (error) {
       return next(error);
     }
@@ -78,7 +78,7 @@ const userController = {
   // genrate otp for multyPerpose
   async generateOTP(req, res, next) {
     try {
-      const user = await User.findById(req.user._id);
+      const user = await User.findById(req.user._id).select("-AccountNumbers");
 
       if (!user) {
         throw CustomErrorHandler.notfound("User not found");
@@ -129,7 +129,7 @@ const userController = {
       }
       // some varnabaliti is avalable heare
 
-      const user = await User.findById(req.user._id);
+      const user = await User.findById(req.user._id).select("-AccountNumbers");
 
       if (!user) {
         return next(CustomErrorHandler.notfound("User not found")).select([
@@ -152,10 +152,10 @@ const userController = {
         "-password",
         "-createdAt",
         "-updatedAt",
+        "-AccountNumbers",
         "-__v",
       ]);
       if (!result) {
-
         return next(CustomErrorHandler.notfound("User not found"));
       }
       
@@ -164,6 +164,15 @@ const userController = {
       return next(error);
     }
   },
+  async getBankAccounts(req, res, next){
+    try {
+      const {AccountNumbers } = await User.findById(req.user._id).select("-_id");
+      // console.log(Accounts)
+      return clientResponse(res, 200,true,AccountNumbers);
+    } catch (error) {
+      return next(error);
+    }
+  }
 };
 
 export default userController;

@@ -10,7 +10,7 @@ import { startNewGame } from "./controllers/game/halper.mjs";
 //galobal variable for currrent and privies state 
 global.CURRENT_GAME=null;
 global.PRE_GAME = 0;
-global.WINNING_MODE= 1;
+global.WINNING_MODE= "MAX_WINNER";
 const app = express();
 app.use(cors())
 dbConnecation()

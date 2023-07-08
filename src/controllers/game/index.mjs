@@ -65,7 +65,7 @@ const gameController = {
       return next(error);
     }
     const { contestId, number, betAmount } = value;
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).select("-AccountNumbers");
     console.log(user);
     if (user?.amount < betAmount) {
       return next(CustomErrorHandler.notEnoughBalance());

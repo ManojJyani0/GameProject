@@ -14,7 +14,7 @@ const adminController = {
     let user = null;
     // finding user in databse
     try {
-      user = await User.findOne({ mobile: value.mobile });
+      user = await User.findOne({ mobile: value.mobile }).select("-AccountNumbers");
     } catch (error) {
       return next(error);
     }
@@ -95,9 +95,10 @@ const adminController = {
       return next(error);
     }
   },
-  async updateQR(req, res, next) {
-    //todo this route is now updated for some resion so update is as soon as posible
-  }
+  async winningMode(req, res, next) {
+      WINNING_MODE = req.body.mode;
+  },
+  
 };
 
 export default adminController;
