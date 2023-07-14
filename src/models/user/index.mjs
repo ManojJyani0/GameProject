@@ -42,7 +42,6 @@ const userSchema = new Schema(
         },
         accountNumber: {
           type: Number,
-          unique:true
         },
         bankName: {
           type: String,

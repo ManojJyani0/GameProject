@@ -76,7 +76,7 @@ const transactionController = {
 
             // upadating balance in users account via transactions
             const user = await User.findById(req.user._id);
-            console.log(user)
+            // console.log(user)
             user.amount = balance;
             await user.save();
 
@@ -109,20 +109,6 @@ const transactionController = {
         try {
             await Transaction.create({amount,UTR,userId:req.user._id, transactionType:"Deposit" });
             return clientResponse(res, 200, true, {message:"Your Transaction is Successfully Genrated"});
-        } catch (error) {
-            return next (error)
-        }
-    },
-    addBankAccount:async (req, res, next)=>{
-        const {error, value} = req.body
-    },
-    removeBankAccount:async (req, res, next)=>{
-
-    },
-    refillDetails:async (req, res, next)=>{
-        try {
-            const data = await Account.find();
-            return clientResponse(res, 200, true,data[0])
         } catch (error) {
             return next (error)
         }

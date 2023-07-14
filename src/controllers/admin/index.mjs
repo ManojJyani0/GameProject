@@ -1,5 +1,5 @@
 import clientResponse from "../../utils/response.mjs";
-import { Account, Contest, Transaction, User } from "../../models/index.mjs";
+import { Contest, PromoCode, Transaction, User } from "../../models/index.mjs";
 import { CustomErrorHandler, JwtService } from "../../services/index.mjs";
 import bcrypt from "bcryptjs";
 import { loginSchema } from "../../validator/index.mjs";
@@ -38,11 +38,10 @@ const adminController = {
 
   async pendingTransaction(req, res, next) {
     try {
-      const pendingTransaction = await Transaction.find({
-        status: "Pending",
-        transactionType: "Deposit",
-      });
-
+      const pendingTransaction = await Transaction.find({$and :[{status: "Pending"},
+      {transactionType: "Deposit"}]})
+      
+      console.log(pendingTransaction)
       return clientResponse(res, 200, true, pendingTransaction);
     } catch (error) {
       return next(error);
@@ -52,10 +51,10 @@ const adminController = {
 
   async pendingRequest(req, res, next) {
     try {
-      const pendingTransaction = await Transaction.find({
-        status: "Pending",
-        transactionType: "Withdrawal",
-      });
+      const pendingTransaction = await Transaction.find({$and :[{
+        status: "Pending"},
+        {transactionType: "Withdrawal",
+      }]});
       console.log(pendingTransaction);
       return clientResponse(res, 200, true, pendingTransaction);
     } catch (error) {
@@ -65,6 +64,7 @@ const adminController = {
   //verififing transaction for by using UTR
   async updateTransaction(req, res, next) {
     try {
+      console.log(req.params,req.body)
       const transaction = await Transaction.findById(req.params.id);
       if (!transaction) {
         return next(CustomErrorHandler.notfound("Transaction not found"));
@@ -80,9 +80,11 @@ const adminController = {
         });
       }
     } catch (error) {
+      console.log(error)
       return next(error);
     }
   },
+  
 
   async allContest(req, res, next) {
     try {
@@ -96,9 +98,22 @@ const adminController = {
     }
   },
   async winningMode(req, res, next) {
-      WINNING_MODE = req.body.mode;
+      // WINNING_MODE = req.body.mode;
   },
-  
+  async setUPIID(req,res,next){
+    const {upi_id} = req.body
+    UPI_ID=upi_id;
+    return clientResponse(res, 201, false,{msg:'UPI ID Updated'});
+  },
+  async promoCodeList (req, res, next){
+    try {
+      const codes=await PromoCode.find()
+      return clientResponse(res, 200 ,true,codes)
+    } catch (error) {
+      return next(error)
+    }
+    
+  }
 };
 
 export default adminController;

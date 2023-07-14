@@ -38,7 +38,8 @@ const balance = transactionList.reduce((total, transaction) => {
       transaction.status !== "Faild"
     ) {
       return total - transaction.amount;
-    } else {
+    } 
+    else {
         return total;
     }
   }, 0);

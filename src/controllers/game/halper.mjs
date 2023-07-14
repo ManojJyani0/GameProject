@@ -45,41 +45,20 @@ export const handleWin = async (contestId) => {
 
     if(priGame.players.length!==0){
 
-      switch (WINNING_MODE) {
-        case "MAX_WINNER": // Find the winning number with the highest count
-          priGame.winningNumber = parseInt(
-            Object.keys(findMostNumberSelected).reduce((a, b) =>
-              findMostNumberSelected[a] < findMostNumberSelected[b] ? b : a
-            )
-          );
-          break;
-        case "LOWEST_WINNER":
-          // Find the winning number with the lowest count
-          priGame.winningNumber = parseInt(
-            Object.keys(findMostNumberSelected).reduce((a, b) =>
-              findMostNumberSelected[a] > findMostNumberSelected[b] ? b : a
-            )
-          );
-          break;
-        case "SECOND_MOST":
-          // Find the second most selected winning number
-          priGame.winningNumber = parseInt(
-            Object.keys(findMostNumberSelected).sort(
-              (a, b) => findMostNumberSelected[b] - findMostNumberSelected[a]
-            )[1]
-          );
-          break;
-        case "SECOND_LAST":
-          // Find the second last selected winning number
-          priGame.winningNumber = parseInt(
-            Object.keys(findMostNumberSelected).sort(
-              (a, b) => findMostNumberSelected[a] - findMostNumberSelected[b]
-            )[1]
-          );
-          break;
-        default:
-          priGame.winningNumber = getRandomInt(0, 9);
-          break;
+      if (Object.keys(findMostNumberSelected).length <= 1) {
+        let num = Object.keys(findMostNumberSelected)[0];
+        if (num >= 6) {
+          priGame.winningNumber =Number(num) -2;
+        } else {
+          priGame.winningNumber =Number(num) + 3;
+        }
+      } else {
+        // Find the second most selected winning number
+        priGame.winningNumber = parseInt(
+          Object.keys(findMostNumberSelected).sort(
+            (a, b) => findMostNumberSelected[b] - findMostNumberSelected[a]
+          )[1]
+        );
       }
     }else{
       priGame.winningNumber = getRandomInt(0, 9);

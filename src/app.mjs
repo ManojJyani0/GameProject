@@ -1,21 +1,19 @@
 import express, { json, urlencoded } from "express"
 import http from 'http'
-// import router from "./routes";
 import { errorHandler } from "./middleware/index.mjs";
 import cors from 'cors'
 import { dbConnecation } from "./db/index.mjs";
 import { publiRouter,adminRouter } from "./routes/index.mjs";
-import cluster from "cluster";
 import { startNewGame } from "./controllers/game/halper.mjs";
 //galobal variable for currrent and privies state 
 global.CURRENT_GAME=null;
 global.PRE_GAME = 0;
-global.WINNING_MODE= "MAX_WINNER";
+global.WINNING_MODE= 1;
+global.UPI_ID="9660119161@ybl";
 const app = express();
 app.use(cors())
 dbConnecation()
-
-
+// debugger;
 // Start the first game immediately =
 // this new game runs only once in cluster mode write for this s
 startNewGame();

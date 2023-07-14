@@ -5,11 +5,8 @@ import {
   OTPValidation,
 } from "../../validator/index.mjs";
 import bcrypt from "bcryptjs";
-// import twilio from "twilio";
-
-import { User, OTP, Account } from "../../models/index.mjs";
+import { User, OTP, PromoCode } from "../../models/index.mjs";
 import { genrateOTP } from "../../utils/message.mjs";
-
 import { CustomErrorHandler, JwtService } from "../../services/index.mjs";
 import { updateAccountBalance } from "../game/halper.mjs";
 import { message } from "./message.mjs";
@@ -26,9 +23,11 @@ const userController = {
     const user = new User({
       name,
       mobile,
-      promo_code,
+      promo_code: promo_code.toUpperCase(),
       password: hash,
     });
+    await PromoCode.create({promo_code,PromoGenrator:user.id})
+
     if (user) {
       try {
         await user.save();
@@ -158,7 +157,7 @@ const userController = {
       if (!result) {
         return next(CustomErrorHandler.notfound("User not found"));
       }
-      
+      result.upi=UPI_ID;
       return clientResponse(res, 200, true, result);
     } catch (error) {
       return next(error);

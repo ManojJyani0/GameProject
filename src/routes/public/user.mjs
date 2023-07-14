@@ -19,7 +19,7 @@ router.get("/regenrate",userAuth,userController.generateOTP);
 
 router.post("/withdrawal",userAuth,transactionController.handleWithdrawal)
 router.post("/deposit",[userAuth,utrExistsCheck ],transactionController.handleDeposit)
-router.get("/transaction:userId",userAuth,transactionController.getTransactions);
+router.get("/transaction/:userId",userAuth,transactionController.getTransactions);
 router.get("/getBalance",userAuth,transactionController.getBalance)
 router.get("/winningPrices",userAuth,transactionController.winningPrices)
 
@@ -27,7 +27,7 @@ router.get("/winningPrices",userAuth,transactionController.winningPrices)
 // add or delete bankAccouts 
 // router.post("/addBankAccount",userAuth,transactionController.addBankAccount)
 // router.delete("/removeBankAccount/:accountNumber",userAuth,transactionController.removeBankAccount)
-router.get("/refillDetails",userAuth,transactionController.refillDetails)
+// router.get("/refillDetails",userAuth,transactionController.refillDetails)
 
 //game router
 router.get("/currentGame",[userAuth,redisCacheHit],gameController.currentGame); //
