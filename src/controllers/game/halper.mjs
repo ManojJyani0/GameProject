@@ -1,4 +1,4 @@
-import { Contest, Transaction, User } from "../../models/index.mjs";
+import { AdminTransaction, Contest, Transaction, User } from "../../models/index.mjs";
 import { getUserBalance } from "../../utils/index.mjs";
 
 export const updateAccountBalance = async (userDocId) => {
@@ -137,11 +137,51 @@ export const startNewGame = async () => {
       });
       const preGameContestId = yesterday + ("000" + numPrevDayGames).slice(-3);
       PRE_GAME = preGameContestId;
+      try {
+
+        //geting calculate the amount which is using in games 
+        const totalGames = await Contest.find({$and:[{contest: { $regex: `${yesterday}`}},{totalAmount:{$gt:0}}]});
+        //geting days all tragaction for calculating day wise payment input and output
+        const yesterDayTransactions = await Transaction.find({ createdAt: {
+              $gte: (new Date()).setHours(0,0,0,0,0),
+              $lte: Date.now(),
+              }
+            });
+          const Amounts = yesterDayTransactions.reduce((acc, transaction)=>{
+            console.log(acc,transaction)
+            switch (transaction.transactionType) {
+              case "WithDrawal":
+                acc.totalWithdrawalAmount+=transaction.amount;
+                return acc
+              case "Deposit":
+                acc.totalDepositAmount+=transaction.amount;
+                return acc
+              case "Promo":
+                acc.totalPromoAmount+=transaction.amount;
+                return acc
+              default:
+                return acc;
+                break;
+            }
+          },{totalDepositAmount:0,totalPromoAmount:0,totalWithdrawalAmount:0})
+
+          //createing a dayly report on this code
+        const DalyReport = new AdminTransaction({DateSting:yesterday});
+        DalyReport.totalAmount = totalGames.reduce((totalAmount, acc)=>totalAmount + Number(acc.totalAmount),0);
+        DalyReport.adminErnning = totalAmount*.2;
+        DalyReport.totalGames = numContestPlayed;
+        DalyReport.depositAmount=Amounts.totalDepositAmount;
+        DalyReport.totalWithdrawalAmount = Amounts.totalWithdrawalAmount;
+        DalyReport.totalPromoAmount = Amounts.totalPromoAmount;
+        await DalyReport.save()
+      } catch (error) {
+        console.log(error)
+      }
+      
+      
     } else {
       PRE_GAME = contestId - 1;
     }
-    
-    
     const gameEndTime = new Date(Date.now() + 3 * 60 * 1000);
     const gameState = new Contest({ contestId, gameEndTime });
     await gameState.save();

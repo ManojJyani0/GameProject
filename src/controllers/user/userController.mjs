@@ -5,7 +5,7 @@ import {
   OTPValidation,
 } from "../../validator/index.mjs";
 import bcrypt from "bcryptjs";
-import { User, OTP, PromoCode } from "../../models/index.mjs";
+import { User, OTP, PromoCode, Transaction } from "../../models/index.mjs";
 import { genrateOTP } from "../../utils/message.mjs";
 import { CustomErrorHandler, JwtService } from "../../services/index.mjs";
 import { updateAccountBalance } from "../game/halper.mjs";
@@ -23,11 +23,18 @@ const userController = {
     const user = new User({
       name,
       mobile,
-      promo_code: promo_code.toUpperCase(),
+      promo_code: promo_code ? promo_code.toUpperCase():"",
       password: hash,
     });
-    await PromoCode.create({promo_code,PromoGenrator:user.id})
-
+    if(promo_code){
+      try {
+        await PromoCode.create({promo_code:promo_code,PromoGenrator:user.id});
+        await Transaction.create({amount:20,UTR:`${user._id}${promo_code}`,userId:user._id, transactionType:"Promo",status:"Pending" });
+      } catch (error) {
+        console.log(error)
+        return next(error)
+      }
+    }
     if (user) {
       try {
         await user.save();
@@ -157,8 +164,8 @@ const userController = {
       if (!result) {
         return next(CustomErrorHandler.notfound("User not found"));
       }
-      result.upi=UPI_ID;
-      return clientResponse(res, 200, true, result);
+      result._doc.upi= UPI_ID
+      return clientResponse(res, 200, true,result);
     } catch (error) {
       return next(error);
     }

@@ -20,7 +20,7 @@ const transactionSchema = new Schema({
     },
     transactionType:{
         type:String,
-        enum:["Withdrawal","Deposit","PriceMoney","JoinGame"]
+        enum:["Withdrawal","Deposit","PriceMoney","JoinGame","Promo"]
     },
     discription:{
         type:String,

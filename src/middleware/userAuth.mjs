@@ -3,6 +3,7 @@ import { CustomErrorHandler, JwtService } from "../services/index.mjs";
 
 const userAuth =(req, res, next)=>{
     const token = req.header("Authorization");
+    
     if(!token){
         return next(CustomErrorHandler.unAuthorized());
     }

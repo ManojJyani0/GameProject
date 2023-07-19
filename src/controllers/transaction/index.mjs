@@ -1,4 +1,4 @@
-import { Account, Transaction, User } from "../../models/index.mjs";
+import { Transaction, User } from "../../models/index.mjs";
 import {CustomErrorHandler} from "../../services/index.mjs";
 import {clientResponse} from "../../utils/index.mjs";
 import { getUserBalance, getWinningPrice } from "../../utils/message.mjs";

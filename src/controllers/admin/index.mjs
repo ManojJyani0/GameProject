@@ -85,7 +85,6 @@ const adminController = {
     }
   },
   
-
   async allContest(req, res, next) {
     try {
       const all = await Contest.find();
@@ -112,7 +111,15 @@ const adminController = {
     } catch (error) {
       return next(error)
     }
-    
+  },
+  async UpdatePromoBanifits (req, res , next){
+    try {
+      const pendingTransaction = await Transaction.find({$and :[{status: "Pending"},
+      {transactionType: "Promo"}]})
+      return clientResponse(res, 200, true, pendingTransaction);
+    } catch (error) {
+      return next(error);
+    }
   }
 };
 
