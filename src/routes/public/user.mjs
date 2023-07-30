@@ -30,9 +30,9 @@ router.get("/winningPrices",userAuth,transactionController.winningPrices)
 // router.get("/refillDetails",userAuth,transactionController.refillDetails)
 
 //game router
-router.get("/currentGame",[userAuth,redisCacheHit],gameController.currentGame); //
+router.get("/currentGame",[userAuth],gameController.currentGame); //
 router.post("/joinGame",[userAuth,allReadyJoind],gameController.joinGame); //
-router.get("/lastRecords",[userAuth,last10Recorescachehit],gameController.lastTenRecords); //
+router.get("/lastRecords",[userAuth ],gameController.lastTenRecords); //
 
 
 export default router;

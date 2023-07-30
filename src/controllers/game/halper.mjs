@@ -168,7 +168,7 @@ export const startNewGame = async () => {
           //createing a dayly report on this code
         const DalyReport = new AdminTransaction({DateSting:yesterday});
         DalyReport.totalAmount = totalGames.reduce((totalAmount, acc)=>totalAmount + Number(acc.totalAmount),0);
-        DalyReport.adminErnning = totalAmount*.2;
+        DalyReport.adminErnning = DalyReport.totalAmount*.2;
         DalyReport.totalGames = numContestPlayed;
         DalyReport.depositAmount=Amounts.totalDepositAmount;
         DalyReport.totalWithdrawalAmount = Amounts.totalWithdrawalAmount;
