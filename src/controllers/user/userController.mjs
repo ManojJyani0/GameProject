@@ -92,12 +92,7 @@ const userController = {
       const generatedOTP = genrateOTP();
       let otpSMS;
       try {
-        otpSMS = {
-          return: true,
-          request_id: "0pvmeakdoitncb1",
-          message: ["SMS sent successfully."],
-        };
-        //await message(generatedOTP, user.mobile);
+        otpSMS =  await message(generatedOTP, user.mobile);
         if (otpSMS) {
           await OTP.create({ sid: otpSMS.request_id, OTP: generatedOTP });
         }
