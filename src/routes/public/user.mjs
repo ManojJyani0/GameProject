@@ -1,7 +1,7 @@
 import { gameController, transactionController, userController } from "../../controllers/index.mjs";
 import express from "express";
 import {allReadyJoind, userAuth, userExistsCheck, utrExistsCheck} from "../../middleware/index.mjs";
-import {last10Recorescachehit, redisCacheHit} from "../../cache/index.mjs";
+// import {last10Recorescachehit, redisCacheHit} from "../../cache/index.mjs";
 const router = express.Router();
 
 //user related routes

@@ -3,7 +3,7 @@ import clientResponse from "../../utils/response.mjs";
 import { gameSchema } from "../../validator/game.mjs";
 import { CustomErrorHandler } from "../../services/index.mjs";
 import { updateAccountBalance } from "./halper.mjs";
-import { client } from "../../cache/middlewares.mjs";
+// import { client } from "../../cache/middlewares.mjs";
 const gameController = {
   //current game all inforamation
   currentGame: async (rea, res, next) => {
@@ -48,9 +48,9 @@ const gameController = {
           "-totalAmount",
           "-__v",
         ]);
-      await client.set('last10Records', JSON.stringify(docs),{
-        EX: 150,
-      });
+      // await client.set('last10Records', JSON.stringify(docs),{
+      //   EX: 150,
+      // });
       console.log(docs)
       return clientResponse(res, 200, true, docs);
     } catch (error) {
