@@ -20,9 +20,9 @@ const gameController = {
       ]);
       // await currentGame.save()      
       console.log('response from Database')
-      await client.set('currentGame', JSON.stringify(currentGame),{
-        EX: Math.floor((currentGame.gameEndTime-Date.now())/1000),
-      });
+      // await client.set('currentGame', JSON.stringify(currentGame),{
+      //   EX: Math.floor((currentGame.gameEndTime-Date.now())/1000),
+      // });
       return clientResponse(res, 200, true, currentGame);
     } catch (error) {
       return next(error);
