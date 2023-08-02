@@ -19,7 +19,7 @@ router.get("/regenrate",userAuth,userController.generateOTP);
 
 router.post("/withdrawal",userAuth,transactionController.handleWithdrawal)
 router.post("/deposit",[userAuth,utrExistsCheck ],transactionController.handleDeposit)
-router.get("/transaction/:userId",userAuth,transactionController.getTransactions);
+router.get("/transaction",userAuth,transactionController.getTransactions);
 router.get("/getBalance",userAuth,transactionController.getBalance)
 router.get("/winningPrices",userAuth,transactionController.winningPrices)
 

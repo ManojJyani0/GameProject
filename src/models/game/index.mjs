@@ -24,7 +24,7 @@ const contestSchema = new Schema({
       },
     },
   ],
-  gameEndTime: Date,
+  gameEndTime: Number,
   status:{
     type:String,
     enum:["Open","Closed"],

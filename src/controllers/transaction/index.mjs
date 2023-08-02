@@ -13,6 +13,7 @@ const transactionController = {
         try {
             const transactionList = await Transaction.find({userId:req.user._id}).select(["-_id","-userId","-__v","-updatedAt"]).sort({createdAt:-1}).limit(10);
             // const balance = await getUserBalance(transactionList)
+            
             return clientResponse(res, 200, true,transactionList)        
         } catch (error) {
             return next(error)

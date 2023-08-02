@@ -183,7 +183,7 @@ export const startNewGame = async () => {
       PRE_GAME = contestId - 1;
     }
     const gameEndTime = new Date(Date.now() + 3 * 60 * 1000);
-    const gameState = new Contest({ contestId, gameEndTime });
+    const gameState = new Contest({ contestId, gameEndTime:Date.parse(gameEndTime) });
     await gameState.save();
     if(PRE_GAME>0){
       handleWin(PRE_GAME);
