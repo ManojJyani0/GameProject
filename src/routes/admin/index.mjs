@@ -12,6 +12,7 @@ router.get("/", adminController.allContest);
 @this is deposit requests of user 
 */
 router.get("/transactions",[userAuth,adminAuth],adminController.pendingTransaction);
+
 router.get("/requests",[userAuth,adminAuth],adminController.pendingRequest);
 
 
