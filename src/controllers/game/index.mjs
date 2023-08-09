@@ -31,7 +31,6 @@ const gameController = {
   //pre games for records tables
   lastTenRecords: async (req, res, next) => {
     try {
-      console.log("response form database")
       const docs = await Contest.find({status:"Closed"})
         .sort({ createdAt: -1 })
         .limit(11)
@@ -57,6 +56,7 @@ const gameController = {
       return next(error);
     }
   },
+  
 
   // join Game
   joinGame: async (req, res, next) => {

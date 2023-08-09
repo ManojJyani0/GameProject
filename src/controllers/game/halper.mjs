@@ -94,7 +94,7 @@ export const handleWin = async (contestId) => {
         amount: playerPrizeMoney,
         transactionType: "PriceMoney",
         status: "Success",
-        UTR: `PriceMoney${priGame.contestId}${player.userId}`,
+        UTR: `PriceMoney-${priGame.contestId}-${player.userId}-${priGame.winningNumber}`,
       };
     });
 

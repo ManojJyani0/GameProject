@@ -113,7 +113,15 @@ const transactionController = {
         } catch (error) {
             return next (error)
         }
-    }
+    },
+    usersRecords:async (req, res, next)=>{
+        try {
+            const docs = await Transaction.find({ userId:req.user._id,transactionType:"PriceMoney"}).select(["-transactionType","-userId","-status"]);
+            return clientResponse(res,200,true,docs);
+        } catch (error) {
+            return next(error)
+        }
+      },
 }
 
 
